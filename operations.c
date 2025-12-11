@@ -183,19 +183,18 @@ int execute(Operation operation, const char* filename) {
 }
 
 int deleteRegex(Operation op, const char* filename, char* buf, long size) {
+  regex_t regex;
+  if (regcomp(&regex, op.str1, REG_EXTENDED)) {
+    printf("Неверное регулярное выражение!\n");
+    return 1;
+  }
+ 
   FILE* file = fopen(filename, "w");
   if (!file) {
     printf("Не удалось открыть файл %s для записи!\n", filename);
     return 1;
   }
 
-  regex_t regex;
-  if (regcomp(&regex, op.str1, REG_EXTENDED)) {
-    printf("Неверное регулярное выражение!\n");
-    fclose(file);
-    return 1;
-  }
- 
   char* i = buf;
   char* j = buf;
   regmatch_t match;
@@ -219,18 +218,18 @@ int deleteRegex(Operation op, const char* filename, char* buf, long size) {
 }
 
 int replaceRegex(Operation op, const char* filename, char* buf, long size) {
-  FILE* file = fopen(filename, "w");
-  if (!file) {
-    printf("Не удалось открыть файл %s для записи!\n", filename);
-    return 1;
-  }
-
   regex_t regex;
   if (regcomp(&regex, op.str1, REG_EXTENDED)) {
     printf("Неверное регулярное выражение!\n");
     return 1;
   }
  
+  FILE* file = fopen(filename, "w");
+  if (!file) {
+    printf("Не удалось открыть файл %s для записи!\n", filename);
+    return 1;
+  }
+
   char* i = buf;
   char* j = buf;
   regmatch_t match;
